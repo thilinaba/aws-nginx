@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Main stack'
+
+Parameters:
+  CfnBucketUrl:
+    Description: S3 bucket URL to locate the nested stack CFN template files
+    Type: String
+    Default: https://<bucket-name>.<region>.amazonaws.com
+
+  VpcBlock:
+    Type: String
+    Default: 192.168.0.0/16
+    Description: CidrBlock for the VPC
+
+  PublicSubnet01Block:
+    Type: String
+    Default: 192.168.1.0/24
+    Description: CidrBlock for public subnet 01 within the VPC
+
+  BaseAmi:
+    Type: String
+    Default: <AMI ID returned from the Packer>
+    Description: EC2 Base AMI for the deployment
+
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    Description: EC2 Base AMI for the deployment
+
+  SshKeyName:
+    Type: String
+    Default: <your SSH key name>
+    Description: SSH Keypair name to associate with the EC2 instance
+
+Resources:
+
+  NetworkStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join [ "/", [ !Ref CfnBucketUrl, network.yaml ] ]
+      Parameters:
+        VpcBlock: !Ref VpcBlock
+        PublicSubnet01Block: !Ref PublicSubnet01Block
+
+  Ec2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join [ "/", [ !Ref CfnBucketUrl, ec2.yaml ] ]
+      Parameters:
+        VpcId: !GetAtt NetworkStack.Outputs.VpcId
+        PublicSubnet01: !GetAtt NetworkStack.Outputs.PublicSubnet01
+        BaseAmi: !Ref BaseAmi
+        InstanceType: !Ref InstanceType
+        SshKeyName: !Ref SshKeyName

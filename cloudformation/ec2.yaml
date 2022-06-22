@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'EC2 resources'
+
+Parameters:
+  VpcId:
+    Type: String
+
+  PublicSubnet01:
+    Type: String
+
+  BaseAmi:
+    Type: String
+
+  InstanceType:
+    Type: String
+
+  SshKeyName:
+    Type: String
+
+Resources:
+  Ec2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Nginx EC2 Security Group"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  Ec2Instance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref BaseAmi
+      KeyName: !Ref SshKeyName
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - Ref: Ec2SecurityGroup
+          SubnetId: !Ref PublicSubnet01
+      UserData:
+        Fn::Base64: 
+            !Sub |
+              #!/bin/bash
+              docker run --name nginx -p 80:80 -d nginx
