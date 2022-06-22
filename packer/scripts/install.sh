@@ -17,3 +17,5 @@ echo \
 
 sudo apt-get update -y 
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+sudo docker pull nginx
