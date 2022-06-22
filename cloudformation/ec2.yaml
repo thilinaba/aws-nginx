@@ -49,4 +49,4 @@ Resources:
         Fn::Base64: 
             !Sub |
               #!/bin/bash
-              docker run --name nginx -p 80:80 -d nginx
+              sudo docker run --name nginx -p 80:80 -d nginx
