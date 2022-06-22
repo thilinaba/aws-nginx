@@ -1,0 +1,9 @@
+{
+    "profile": "personal",
+    "region": "us-east-1",
+    "source_ami": "ami-052efd3df9dad4825",
+    "vpc_id": "vpc-8410418",
+    "subnet_id": "subnet-4491060e",
+    "instance_type": "t3.micro",
+    "ami_name_prefix": "hardened-ubuntu-docker"
+}
